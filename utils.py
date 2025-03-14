@@ -19,7 +19,7 @@ dp = Dispatcher()
 async def cmd_start(message: types.Message):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=QUIZ_BUTTON))
-    await message.answer("Привет! нет желания пройти quiz?", reply_markup=builder.as_markup(resize_keyboard=True))
+    await message.answer("Привет! Есть желание пройти quiz?", reply_markup=builder.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == QUIZ_BUTTON)
