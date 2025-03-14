@@ -19,7 +19,7 @@ dp = Dispatcher()
 async def cmd_start(message: types.Message):
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text=QUIZ_BUTTON))
-    await message.answer("Привет! Я новый бот.", reply_markup=builder.as_markup(resize_keyboard=True))
+    await message.answer("Привет! нет желания пройти quiz?", reply_markup=builder.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == QUIZ_BUTTON)
@@ -82,6 +82,7 @@ async def get_next_question(callback: types.CallbackQuery, records_book):
         await get_question(callback.from_user.id, callback.message)
     else:
         await callback.message.answer(f"Это был последний вопрос.\nВаши результаты: {sum(json.loads(records_book))} из {len(quiz_data)}")
+        await cmd_start(callback.message)
         # for i, record in enumerate(json.loads(records_book)):
         #     correct_answer_index = quiz_data[i]['correct_option']
         #     if record == quiz_data[i]['options'][correct_answer_index]:
