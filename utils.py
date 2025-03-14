@@ -76,28 +76,27 @@ async def get_next_question(callback: types.CallbackQuery, records_book):
 
     current_question_index = await get_quiz_index(callback.from_user.id)
     current_question_index += 1
-
     await update_quiz_index(callback.from_user.id, current_question_index, records_book)
 
     if current_question_index < len(quiz_data):
         await get_question(callback.from_user.id, callback.message)
     else:
-        await callback.message.answer("Это был последний вопрос.\nВаши результаты:")
-        for i, record in enumerate(json.loads(records_book)):
-            correct_answer_index = quiz_data[i]['correct_option']
-            if record == quiz_data[i]['options'][correct_answer_index]:
-                await callback.message.answer(
-                    f"{quiz_data[i]['question']}\n"
-                    f"Ваш ответ верен!: {record}!")
-            else:
-                await callback.message.answer(
-                    f"{quiz_data[i]['question']}\n"
-                    f"Ваш ответ: {record}; \nВерный ответ: {quiz_data[i]['options'][correct_answer_index]}.")
+        await callback.message.answer(f"Это был последний вопрос.\nВаши результаты: {sum(json.loads(records_book))} из {len(quiz_data)}")
+        # for i, record in enumerate(json.loads(records_book)):
+        #     correct_answer_index = quiz_data[i]['correct_option']
+        #     if record == quiz_data[i]['options'][correct_answer_index]:
+        #         await callback.message.answer(
+        #             f"{quiz_data[i]['question']}\n"
+        #             f"Ваш ответ верен!: {record}!")
+        #     else:
+        #         await callback.message.answer(
+        #             f"{quiz_data[i]['question']}\n"
+        #             f"Ваш ответ: {record}; \nВерный ответ: {quiz_data[i]['options'][correct_answer_index]}.")
 
 
 def update_records(book, record):
     book = json.loads(book)
-    book.append(str(record))
+    book.append(int(record))
     return json.dumps(book)
 
 
@@ -107,11 +106,13 @@ async def fix_wrong_answer(
     callback_data: TextCallbackFactory
 ):
     current_question_index = await get_quiz_index(callback.from_user.id)
-    correct_option = quiz_data[current_question_index]["correct_option"]
-    
+    correct_option_index = quiz_data[current_question_index]["correct_option"]
+    correct_option = quiz_data[current_question_index]['options'][correct_option_index]
+    current_answer = 1 if callback_data.string == correct_option else 0
+
     await destroyer_options_keyboard(callback)
-    await callback.message.answer(f"Ответ {"верный" if correct_option==callback_data.string else "неверный"}: {callback_data.string} ")
+    await callback.message.answer(f"Ответ {"верный" if correct_option == callback_data.string else "неверный"}: {callback_data.string} ")
 
     current_records_book = await get_records_book(callback.from_user.id)
-    crb = update_records(current_records_book, callback_data.string)
+    crb = update_records(current_records_book, current_answer)
     await get_next_question(callback, crb)
