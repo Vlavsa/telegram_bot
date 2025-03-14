@@ -83,6 +83,7 @@ async def get_next_question(callback: types.CallbackQuery, records_book):
     else:
         await callback.message.answer("Это был последний вопрос.\nВаши результаты:")
         for i, record in enumerate(json.loads(records_book)):
+            print(i)
             correct_answer_index = quiz_data[i]['correct_option']
             if record == quiz_data[i]['options'][correct_answer_index]:
                 await callback.message.answer(
@@ -105,6 +106,7 @@ async def fix_wrong_answer(
     callback: types.CallbackQuery,
     callback_data: TextCallbackFactory
 ):
+    await destroyer_options_keyboard(callback)
     await callback.message.answer(f"Ответ: {callback_data.string}")
 
     current_records_book = await get_records_book(callback.from_user.id)
