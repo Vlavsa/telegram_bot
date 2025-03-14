@@ -27,6 +27,7 @@ async def cmd_start(message: types.Message):
 async def cmd_quiz(message: types.Message):
     await message.answer("Давайте начнем квиз! Первый вопрос: ...")
     await new_quiz(message)
+    await message.bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
 
 
 async def new_quiz(message):
@@ -112,5 +113,3 @@ async def fix_wrong_answer(
     current_records_book = await get_records_book(callback.from_user.id)
     crb = update_records(current_records_book, callback_data.string)
     await get_next_question(callback, crb)
-
-
